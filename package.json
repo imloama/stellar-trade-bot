@@ -1,0 +1,44 @@
+{
+  "name": "stellar-trade-bot",
+  "version": "1.0.0",
+  "description": "stellar dex trade bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imloama/stellar-trade-bot.git"
+  },
+  "keywords": [
+    "stellar",
+    "dex",
+    "trade",
+    "bot"
+  ],
+  "author": "imloama@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/imloama/stellar-trade-bot/issues"
+  },
+  "homepage": "https://github.com/imloama/stellar-trade-bot#readme",
+  "dependencies": {
+    "big.js": "^5.2.2",
+    "ccxt": "^1.18.786",
+    "cross-env": "^5.2.0",
+    "crypto-js": "^3.1.9-1",
+    "dayjs": "^1.8.14",
+    "keypress": "^0.2.1",
+    "koa": "^2.7.0",
+    "koa-ejs": "^4.2.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "log4js": "^4.3.2",
+    "pg": "^7.11.0",
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^4.0.9",
+    "stellar-sdk": "^1.0.4",
+    "talib": "^1.1.2",
+    "typeorm": "^0.2.18"
+  }
+}
