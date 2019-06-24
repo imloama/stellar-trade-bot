@@ -17,7 +17,7 @@
       <div class="form-group">
         <div>Assets will monitor:</div>
         <div>
-        <ul class="list-group">
+        <ul class="list-group" id="result">
           
         </ul>
         </div>
@@ -34,6 +34,7 @@
 </div>
 <script>
   $(function(){
+    let alldata = []
     let selected = []
     let select = $('.assets-select').select2({
       placeholder: 'Select asset',
@@ -53,13 +54,32 @@
         }
       }
     });
-    console.log(select)
     $(".assets-select").on("select2:select",function(e){
         var data = e.params.data;
-        console.log(data);
         selected.push(data)
+        if(selected.length === 0){
+          selected = [data, '', '', data]
+        }else if(selected[1] === ''){
+          selected[1] = data
+        }else if(selected[2] === ''){
+          selected[2] = data
+          alldata.push([...selected])
+          selected =[]
+        }
         select.val(null).trigger("change");
+        renderSelected()
     })
+
+    function renderSelected(){
+      let result = alldata.map(item => {
+        let txt = item.map(i => i.text).join('-')
+        return `<li class="list-group-item">${txt}</li>`
+      })
+      if(selected.length > 0){
+        result += `<li class="list-group-item">` + selected.map(i => i.text).join('-')+`</li>`
+      }
+      $("#result").html(result)
+    }
 
   })
 </script>

@@ -32,7 +32,7 @@ router.get('/assets', async ctx => {
   const data = result.records.map(item => {
     return {
       id: item.asset_type === 'native' ? 'XLM' : (item.asset_code+'-'+item.asset_issuer),
-      text: item.asset_code+'-'+item.asset_issuer,
+      text: item.asset_code+'-...'+item.asset_issuer.substring(item.asset_issuer.length-6),
       ...item
     }
   })
