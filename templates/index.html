@@ -1,0 +1,65 @@
+<div class="container">
+  <h2>Pathpayment monitor bot</h2>
+  <div class="card">
+    <div class="card-body">
+      <div class="form-group row">
+        <label for="horizon" class="col-sm-2 col-form-label">Horizon</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="horizon" placeholder="Enter Horizon URL" value="https://horizon.stellar.org">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="secret" class="col-sm-2 col-form-label">Secret</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="secret" placeholder="Enter your secret">
+        </div>
+      </div>
+      <div class="form-group">
+        <div>Assets will monitor:</div>
+        <div>
+        <ul class="list-group">
+          
+        </ul>
+        </div>
+      </div>
+      <div class="form-group">
+          <select id="assets" class="assets-select" style="width: 50rem;">
+          </select>
+      </div>
+
+
+    </div>
+  </div>
+  
+</div>
+<script>
+  $(function(){
+    let selected = []
+    let select = $('.assets-select').select2({
+      placeholder: 'Select asset',
+      theme: 'bootstrap4',
+      ajax: {
+        url: '/assets',
+        dataType: 'json',
+        delay: 600,
+        data: function (params) {
+          console.log(params)
+          var query = {
+            search: params.term,
+            horizon: $("#horizon").val() || 'https://horizon.stellar.org',
+            type: 'public'
+          }
+          return query
+        }
+      }
+    });
+    console.log(select)
+    $(".assets-select").on("select2:select",function(e){
+        var data = e.params.data;
+        console.log(data);
+        selected.push(data)
+        select.val(null).trigger("change");
+    })
+
+  })
+</script>
