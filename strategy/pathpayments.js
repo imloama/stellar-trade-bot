@@ -6,7 +6,7 @@ const BIG_DOWN = 0
 
 
 module.exports = class StellarAPI {
-  constructor(host, loops, secret) {
+  constructor(host, loops, secret, minGap) {
     this.host = host
     // turn to trade pairs
     this.loops = loops
@@ -23,6 +23,7 @@ module.exports = class StellarAPI {
     this.balances = {}
     this.wins = []
     this.fails = []
+    this.minGap = minGap || 0.00001
   }
 
   generatePairs() {
@@ -79,7 +80,7 @@ module.exports = class StellarAPI {
       logger.debug(`---loop:${loops[i]}, profee:${profee}`)
       if (profee === null || profee === undefined || typeof profee === 'undefined' || profee.length === 0) continue
       //TODO 有套利空间
-      logger.debug(`有套利空间：${JSON.stringify(profee)}`)
+      logger.debug(`has profee: ${JSON.stringify(profee)}`)
       // 获取到套利空间，执行pathpayment
       await this.pathPay(keys, profee[0], profee[profee.length - 1])
     }
@@ -129,7 +130,7 @@ module.exports = class StellarAPI {
     if (ob1s.length < keys.length - 1) return;
     //根据汇率计算是否有利可图
     let canWin = ob1s.map(item => Number(item.price)).reduce((a, b) => Number(new Big(a).times(b).toString()))
-    logger.debug(`codes:${codes.join('-')}, 汇率：${canWin}`)
+    logger.debug(`codes:${codes.join('-')}, currency：${canWin}`)
     if (canWin >= 1) return;
     //存在套利机会，计算要支出多少才可以拿到
 
@@ -137,13 +138,13 @@ module.exports = class StellarAPI {
     let mins = []
     for (let i = 1, n = keys.length - 1; i < n; i++) {
       //取两者最小的
-      logger.debug(`code: ${keys[i]}, 前一单：${JSON.stringify(ob1s[i - 1])}，后一单：${JSON.stringify(ob1s[i])}-`)
+      logger.debug(`code: ${keys[i]}, pre：${JSON.stringify(ob1s[i - 1])}，next：${JSON.stringify(ob1s[i])}-`)
       const min = Number(ob1s[i - 1].cost) > Number(ob1s[i].amount) ? Number(ob1s[i].amount) : Number(ob1s[i - 1].cost)
       logger.debug(`min:${min}, cost: ${ob1s[i - 1].cost}, amount:${ob1s[i].amount}, cost>amount:${ob1s[i - 1].cost > ob1s[i].amount}`)
       mins.push(min)
     }
 
-    logger.debug(`--最小中间数量：${JSON.stringify(mins)}--`)
+    logger.debug(`--mins：${JSON.stringify(mins)}--`)
     for (let i = 1, n = mins.length; i < n; i++) {
       if (mins[i - 1] / ob1s[i].price > mins[i]) {
         // 向前
@@ -155,7 +156,7 @@ module.exports = class StellarAPI {
         mins[i] = new Big(mins[i - 1]).times(ob1s[i].price_r.d).div(ob1s[i].price_r.n).round(7, BIG_DOWN)
       }
     }
-    logger.debug(`--重新计算后的：最小中间数量：${JSON.stringify(mins)}--`)
+    logger.debug(`--recalc mins：${JSON.stringify(mins)}--`)
 
     //第1位的数量
     const start = Number(this.balances[ob1s[0].base])
@@ -164,10 +165,10 @@ module.exports = class StellarAPI {
       const target = Number(new Big(mins[mins.length - 1])
         .times(ob1s[ob1s.length - 1].price_r.d).div(ob1s[ob1s.length - 1].price_r.n).round(7, BIG_DOWN))
       logger.debug(`--start:${start}--calc:${calc}--target:${target}`)
-      if (target - calc > 0.00001) {
+      if (target - calc > this.minGap) {
         return [calc, ...mins, target]
       }
-      logger.debug(`target - calc 小于0.00001，没有套利空间`)
+      logger.debug(`target - calc less than ${this.minGap}，no profee`)
       return
     } else {
       // 重新根据start计算
@@ -176,7 +177,7 @@ module.exports = class StellarAPI {
       target = Number(new Big(start).times(target).div(calc).round(7, BIG_DOWN))
       const result = [calc, ...mins, target] //TODO 中间数据不正确
       logger.debug(`---re: result: ${JSON.stringify(result)}`)
-      if ((target - start) > 0.00001) {
+      if ((target - start) > this.minGap) {
         return result
       }
       return

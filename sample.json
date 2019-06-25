@@ -1,33 +1,7 @@
-# stellar-trade-bot
-
-Stellar trade bot is a bot for SDEX, including get profees from pathpayment and grid strategy.
-This project is experimental and on developing.
-Take all the risks by yourself.
-
-## Run
-
-- clone
-```
-git clone https://github.com/imloama/stellar-trade-bot
-```
-
-- install
-```
-npm install or yarn
-```
-
-- copy sample.json to config.json
-
-- modify config.json
-```
 {
-  // horizon url
   "horizon": "https://horizon.stellar.org",
-  // your accout secret
   "secret": "SCVXJ4BCNEWWNZ6NT3NDXXBGLMD4WAYVUQ7YBLYEKZXTNPR43H3NJAMS",
-  // min value to win
   "minGap":0.0001,
-  // the trade pairs that bot will watch
   "loops":[
     [
       { "code": "XLM" },
@@ -42,17 +16,5 @@ npm install or yarn
       { "code": "XLM" }
     ]
   ],
-  // interval seconds
   "intervalSeconds": 5
 }
-```
-
-- run
-```
-npm run dev
-```
-
-## Roadmap
-1. grid strategy
-2. web ui
-3. dashboard
